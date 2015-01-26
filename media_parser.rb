@@ -73,13 +73,13 @@ class MediaParser
     # Matches: this.is.a.title.s##.e##.whatever capturing title, season number, and episode number
     matches = /(?<title>.+)[\._ \-][Ss](?<season>\d+)[EeXx](?<episode>\d{2})[\._ \-]/.match(name)
     if matches
-      return { title: matches['title'], season: matches['season'].to_i, episode: matches['episode'].to_i }
+      return { type: :tv, title: matches['title'], season: matches['season'].to_i, episode: matches['episode'].to_i }
     end
     
     # Matches: this.is.a.title.s##.whatever capturing title, and season number
     matches = /(?<title>.+)[\._ \-][Ss](?<season>\d+)[\._ \-]/.match(name)
     if matches
-      return { title:  matches['title'], season: matches['season'].to_i }
+      return { type: :tv, title:  matches['title'], season: matches['season'].to_i }
     end
     
     return nil
@@ -90,7 +90,7 @@ class MediaParser
     # Matches: this.is.a.title.1900.whatever capturing title, and year
     matches = /(?<title>.+)[\._ \-](?<year>(19|20)\d{2})[\._ \-]/.match(name)
     if matches
-      return { title:  matches['title'], year: matches['year'].to_i }
+      return { type: :movie, title:  matches['title'], year: matches['year'].to_i }
     end
     
     return nil
@@ -101,7 +101,7 @@ class MediaParser
     # Matches: artist-album (year) - v# capturing artist, album, and year
     matches = /(?<artist>.*)\s-\s(?<album>.*)\s\((?<year>(19|20)\d{2})\)\s-\s.*V\d/.match(name)
     if matches
-      return { artist: matches['artist'], album: matches['album'], year: matches['year'].to_i }
+      return { type: :music, artist: matches['artist'], album: matches['album'], year: matches['year'].to_i }
     end
     
     return nil
@@ -138,21 +138,21 @@ end
 
 test_media = { 
   ## TV
-  'Archer.2009.S06E03.720p.HDTV.x264-SCENE.mkv' => { type: :tv, details: { title: 'Archer.2009', season: 6, episode: 3 } },
-  'Its.Always.Sunny.in.Philadelphia.S10E02.720p.HDTV.x264-SCENE.mkv' => { type: :tv, details: { title: 'Its.Always.Sunny.in.Philadelphia', season: 10, episode: 2 } },
-  'The.Venture.Bros.S06.Special.All.This.and.Gargantua-2.720p.WEB-DL.DD5.1.H.264-SCENE.mkv' => { type: :tv, details: { title: 'The.Venture.Bros', season: 6 } },
-  'Marvels.Agents.of.S.H.I.E.L.D.S02E08.720p.HDTV' => { type: :tv, details: { title: 'Marvels.Agents.of.S.H.I.E.L.D', season: 2, episode: 8 } },
+  'Archer.2009.S06E03.720p.HDTV.x264-SCENE.mkv' => { type: :tv, details: { type: :tv, title: 'Archer.2009', season: 6, episode: 3 } },
+  'Its.Always.Sunny.in.Philadelphia.S10E02.720p.HDTV.x264-SCENE.mkv' => { type: :tv, details: { type: :tv, title: 'Its.Always.Sunny.in.Philadelphia', season: 10, episode: 2 } },
+  'The.Venture.Bros.S06.Special.All.This.and.Gargantua-2.720p.WEB-DL.DD5.1.H.264-SCENE.mkv' => { type: :tv, details: { type: :tv, title: 'The.Venture.Bros', season: 6 } },
+  'Marvels.Agents.of.S.H.I.E.L.D.S02E08.720p.HDTV' => { type: :tv, details: { type: :tv, title: 'Marvels.Agents.of.S.H.I.E.L.D', season: 2, episode: 8 } },
   
   ## Movies
-  'I.Heart.Huckabees.2004.720p.HDTV.AC3.x264-SCENE' => { type: :movie, details: { title: 'I.Heart.Huckabees', year: 2004 } },
-  '2001.A.Space.Odyssey.1968.1080p.BluRay.x264-SCENE' => { type: :movie, details: { title: '2001.A.Space.Odyssey', year: 1968 } },
-  '8 1-2 1963 1080p Blu-ray AVC LPCM 1.0-SCENE' => { type: :movie, details: { title: '8 1-2', year: 1963 } },
-  'This is a fake media name ending with a year 2015.' => { type: :movie, details: { title: 'This is a fake media name ending with a year', year: 2015 } },
-  'This is a fake media name with a year 2015 in the middle.' => { type: :movie, details: { title: 'This is a fake media name with a year', year: 2015 } },
+  'I.Heart.Huckabees.2004.720p.HDTV.AC3.x264-SCENE' => { type: :movie, details: { type: :movie, title: 'I.Heart.Huckabees', year: 2004 } },
+  '2001.A.Space.Odyssey.1968.1080p.BluRay.x264-SCENE' => { type: :movie, details: { type: :movie, title: '2001.A.Space.Odyssey', year: 1968 } },
+  '8 1-2 1963 1080p Blu-ray AVC LPCM 1.0-SCENE' => { type: :movie, details: { type: :movie, title: '8 1-2', year: 1963 } },
+  'This is a fake media name ending with a year 2015.' => { type: :movie, details: { type: :movie, title: 'This is a fake media name ending with a year', year: 2015 } },
+  'This is a fake media name with a year 2015 in the middle.' => { type: :movie, details: { type: :movie, title: 'This is a fake media name with a year', year: 2015 } },
   
   ## Music
-  'Hans Zimmer - Interstellar (2014) - V0' => { type: :music, details: { artist: 'Hans Zimmer', album: 'Interstellar', year: 2014 } },
-  'Jon Hopkins - Asleep Versions (2014) - WEB V0' => { type: :music, details: { artist: 'Jon Hopkins', album: 'Asleep Versions', year: 2014 } },
+  'Hans Zimmer - Interstellar (2014) - V0' => { type: :music, details: { type: :music, artist: 'Hans Zimmer', album: 'Interstellar', year: 2014 } },
+  'Jon Hopkins - Asleep Versions (2014) - WEB V0' => { type: :music, details: { type: :music, artist: 'Jon Hopkins', album: 'Asleep Versions', year: 2014 } },
   
   ## TODO Audio Book
 
